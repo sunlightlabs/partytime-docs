@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Party Time API</title>
+    
+    
+  <link rel="shortcut icon" type="image/ico" href="http://s3.amazonaws.com/assets.sunlightfoundation.com/brisket/1.0/images/favicon.ico">
+  <link rel="stylesheet" type="text/css" href="documentup.css">
+  <script type="text/javascript" src="//use.typekit.net/blp6kvr.js"></script>
+  <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+
+</head>
+  <body><div class="sf-header"><div class="container"><a class="sf-logo" href="http://www.sunlightfoundation.com">Sunlight Foundation</a></div></div><div id="container">
+  <div id="nav">
+    
+      <div id="header">
+        <h1><a href="index.html" id="logo">Party Time API</a>
+      </div>
+    
+    <ul id="sections">
+      
+        <li>
+          <a href="#overview">Overview</a>
+          
+        </li>
+      
+        <li>
+          <a href="#universal-parameters">Universal Parameters</a>
+          
+        </li>
+      
+        <li>
+          <a href="#api-methods">API Methods</a>
+          
+            <ul>
+              
+                <li>
+                  <a href="#api-methods/event">/event/</a>
+                </li>
+              
+                <li>
+                  <a href="#api-methods/event-event_id">/event/[event_id]/</a>
+                </li>
+              
+                <li>
+                  <a href="#api-methods/lawmaker">/lawmaker/</a>
+                </li>
+              
+                <li>
+                  <a href="#api-methods/lawmaker-lawmaker_id">/lawmaker/[lawmaker_id]/</a>
+                </li>
+              
+                <li>
+                  <a href="#api-methods/host">/host/</a>
+                </li>
+              
+                <li>
+                  <a href="#api-methods/host-host_id">/host/[host_id]/</a>
+                </li>
+              
+            </ul>
+          
+        </li>
+      
+        <li>
+          <a href="#api-return-types">API return types</a>
+          
+            <ul>
+              
+                <li>
+                  <a href="#api-return-types/events">Events</a>
+                </li>
+              
+                <li>
+                  <a href="#api-return-types/legislators">Legislators</a>
+                </li>
+              
+                <li>
+                  <a href="#api-return-types/hosts">Hosts</a>
+                </li>
+              
+                <li>
+                  <a href="#api-return-types/venues">Venues</a>
+                </li>
+              
+            </ul>
+          
+        </li>
+      
+    </ul>
+    
+    
+      <div class="extra twitter">
+        <iframe allowtransparency="true" frameborder="0" scrolling="no" style="width:162px; height:20px;" src="https://platform.twitter.com/widgets/follow_button.html?screen_name=sunlightlabs&show_count=false"></iframe></div><div class="thanks">powered by <a href="http://documentup.com">DocumentUp</a></div>
+    
+  </div>
+  <div id="content">
+    
+    <p><!--- This is converted from the html here http://politicalpartytime.org/api/ via pandoc http://johnmacfarlane.net/pandoc/ ; formatting quirks were fixed by hand. -->
+</p>
+<h1>API</h1>
+<h2 id='overview'>Overview</h2 id='overview'>
+<p>The base url for the API is <code>/politicalpartytime.org/api/v1</code> ; any
+addresses in the below must be appended to the base url. All API calls
+require an active <a href="http://services.sunlightlabs.com/accounts/register/">Sunlight API
+key</a> and a format
+(either &#39;json&#39; or &#39;xml&#39;) as querystring arguments. For instance, a call
+to describe event #31 would look like <code>/event/31/?format=json&amp;apikey=[API key]</code>. API <a href="#methods">methods</a> and <a href="#return_types">return
+types</a> are described below.
+
+</p>
+<p>Return objects consist of two parts; a meta object describing the results returned, and a list of the returned objects. The meta object looks like the following:
+
+</p>
+<pre><code>{"<span class="attribute">meta</span>": <span class="value">{"<span class="attribute">limit</span>": <span class="value"><span class="number">50</span></span>, "<span class="attribute">next</span>": <span class="value"><span class="string">"/api/v1/event/?apikey=[API Key]&amp;limit=50&amp;offset=50&amp;format=json"</span></span>, "<span class="attribute">offset</span>": <span class="value"><span class="number">0</span></span>, "<span class="attribute">previous</span>": <span class="value"><span class="literal">null</span></span>, "<span class="attribute">total_count</span>": <span class="value"><span class="number">17246</span></span>}</code></pre>
+<p>   The <code>next</code> variable is the next page in this result set; <code>previous</code>--which in the above is null, is the previous page. The <code>total_count</code> is the total number of objects matching this description, though not all are returned. The <code>limit</code> is the maximum number of objects returned per page.
+
+</p>
+<h2 id='universal-parameters'>Universal Parameters</h2 id='universal-parameters'>
+<p>All API calls can be given a <code>limit</code> and an <code>offset</code> parameter, though the limit can not be greater than 50. The offset must be positive.
+
+</p>
+<p><a id="methods"></a>
+</p>
+<h2 id='api-methods'>API Methods</h2 id='api-methods'>
+<h3 id='api-methods/event'>/event/</h3 id='api-methods/event'>
+<p>Return a list of <a href="#events">events</a>. With no filters will return all
+events. Optional parameters are:
+
+</p>
+<p> <code>beneficiaries__crp_id</code> 
+:   Lawmaker ID used by the Center for Responsive Politics.
+
+</p>
+<pre><code>/<span class="keyword">event</span>/?beneficiaries__crp_id=N00003675&amp;<span class="keyword">format</span>=json&amp;apikey=[API key]</code></pre>
+<p><code>start_date__gt</code>
+: Show only events with a start date after a given date. Dates should be formatted YYYY-MM-DD.
+
+</p>
+<pre><code>/event/?start_date__gt=2012-10-01&amp;format=json&amp;apikey=[API key]<span class="tag">&lt;/<span class="title">pre</span>></span></code></pre>
+<p> <code>host__id </code> 
+:   Internal host ID
+
+</p>
+<pre><code>   /<span class="keyword">event</span>/?host_id=<span class="number">12</span>&amp;<span class="keyword">format</span>=json&amp;apikey=[API key]</code></pre>
+<p> <code>beneficiaries__state </code> 
+:   Two-letter postal code indicating what state the event beneficiary
+    represents. Presidents do not represent a single state.
+
+</p>
+<pre><code>/<span class="keyword">event</span>/?beneficiaries__state=CT&amp;<span class="keyword">format</span>=json&amp;apikey=[API key]</code></pre>
+<h3 id='api-methods/event-event_id'>/event/[event_id]/</h3 id='api-methods/event-event_id'>
+<p>Return details about a single <a href="#events">event</a> referenced by ID. No
+additional parameters are required.
+
+</p>
+<pre><code>/<span class="keyword">event</span>/<span class="number">31</span>/?<span class="keyword">format</span>=json&amp;apikey=[API key]</code></pre>
+<h3 id='api-methods/lawmaker'>/lawmaker/</h3 id='api-methods/lawmaker'>
+<p>Return details about <a href="#legislators">legislators</a>. With no additional
+parameters, will return all legislators.
+
+</p>
+<p> <code>crp_id</code> 
+:   Show only the legislator identified by this Center for
+    Responsive Politics ID.
+
+
+</p>
+<pre><code>   /lawmaker/?<span class="keyword">format</span>=json&amp;crp_id=N00003675&amp;apikey=[API key]</code></pre>
+<h3 id='api-methods/lawmaker-lawmaker_id'>/lawmaker/[lawmaker_id]/</h3 id='api-methods/lawmaker-lawmaker_id'>
+<p>Return details about a single <a href="#legislators">legislator</a> referenced by
+internal ID. No additional parameters are required.
+
+
+
+</p>
+<h3 id='api-methods/host'>/host/</h3 id='api-methods/host'>
+<p>Return details about all <a href="#hosts">hosts</a>.
+
+</p>
+<h3 id='api-methods/host-host_id'>/host/[host_id]/</h3 id='api-methods/host-host_id'>
+<p>Return details about a single <a href="#hosts">host</a> identified by internal ID.
+
+
+</p>
+<pre><code>    /<span class="identifier">host</span>/<span class="number">?h</span><span class="identifier">ost_id</span>=<span class="number">12</span>&amp;<span class="identifier"><span class="keymethods">format</span></span>=<span class="identifier">json</span>&amp;<span class="identifier">apikey</span>=[<span class="constant">API</span> <span class="identifier">key</span>]</code></pre>
+<p><a id="return_types"></a>
+</p>
+<h2 id='api-return-types'>API return types</h2 id='api-return-types'>
+<p><a id="events"></a>
+</p>
+<h3 id='api-return-types/events'>Events</h3 id='api-return-types/events'>
+<p>Each fundraiser or other party includes the following data, though some
+fields may be empty.
+
+</p>
+<p> <code>Beneficiaries</code> 
+:   A list of beneficiaries, typically lawmakers, who are raising money
+    at the event. Some events raise money for many lawmakers, so this
+    list may be quite long. For more details see
+    <a href="#legislators">legislators</a>.
+
+</p>
+<p> <code>canceled</code> 
+:   Is the event canceled ?
+
+</p>
+<p> <code>checks_payable_to_address</code> 
+:   
+
+</p>
+<p> <code>contributions_info</code> 
+:   
+
+</p>
+<p> <code>distribution_paid_for_by</code> 
+:   The entity who sent the event--typically the sponsoring committee
+
+</p>
+<p> <code>end_date</code> 
+:   
+
+</p>
+<p> <code>end_time</code> 
+:   
+
+</p>
+<p> <code>entertainment</code> 
+:   
+
+</p>
+<p> <code>hosts</code> 
+:   A list of event <a href="#hosts">hosts</a>.
+
+</p>
+<p> <code>id</code> 
+:   An unique internal ID. This is unique with respect to invitations;
+    occasionally we enter different versions of the same event twice.
+
+</p>
+<p> <code>is_presidential</code> 
+:   Is this a presidential fundraiser?
+
+</p>
+<p> <code>make_checks_payable_to</code> 
+:   
+
+</p>
+<p> <code>postponed</code> 
+:   
+
+</p>
+<p> <code>resource_uri</code> 
+:   The local API address for this specific event.
+
+</p>
+<p> <code>rsvp_info</code> 
+:   
+
+</p>
+<p> <code>start_date</code> 
+:   
+
+</p>
+<p> <code>start_time</code> 
+:   
+
+</p>
+<p> <code>venue</code> 
+:   The location of the event. For more details, see <a href="#venues">venues</a>.
+
+</p>
+<p><a id="legislators"></a>
+</p>
+<h3 id='api-return-types/legislators'>Legislators</h3 id='api-return-types/legislators'>
+<p>Not all legislators are present; only those who we have a record of
+hosting or benefitting from a fundraiser.
+
+</p>
+<p> <code>affiliate</code> 
+:   
+
+</p>
+<p> <code>crp_id</code> 
+:   A unique ID assigned by the Center for Responsive Politics.
+
+</p>
+<p> <code>district</code> 
+:   What house district does this lawmaker represent? Absent for other
+    officials.
+
+</p>
+<p> <code>id</code> 
+:   A unique internal ID.
+
+</p>
+<p> <code>name</code> 
+:   
+
+</p>
+<p> <code>party</code> 
+:   
+
+</p>
+<p> <code>resource_uri</code> 
+:   URL for API page with these details.
+
+</p>
+<p> <code>state</code> 
+:   What state does this lawmaker represent?
+
+</p>
+<p> <code>title</code> 
+:   
+
+</p>
+<p><a id="hosts"></a>
+</p>
+<h3 id='api-return-types/hosts'>Hosts</h3 id='api-return-types/hosts'>
+<p>These are people listed as hosts on the invitation. They can be either
+lawmakers or regular citizens.
+
+</p>
+<p> <code>crp_id</code> 
+:   A unique ID assigned by the Center for Responsive Politics.
+
+</p>
+<p> <code>id</code> 
+:   A unique internal ID.
+
+</p>
+<p> <code>name</code> 
+:   
+
+</p>
+<p> <code>resource_uri</code> 
+:   URL for API page with these details.
+
+</p>
+<p><a id="venues"></a>
+</p>
+<h3 id='api-return-types/venues'>Venues</h3 id='api-return-types/venues'>
+<p>The locations where fundraisers are held
+
+</p>
+<p> <code>address1</code> 
+:   
+
+</p>
+<p> <code>address2</code> 
+:   
+
+</p>
+<p> <code>city</code> 
+:   
+
+</p>
+<p> <code>id</code> 
+:   A unique internal ID.
+
+</p>
+<p> <code>resource_uri</code> 
+:   URL for API page with these details.
+
+</p>
+<p> <code>state</code> 
+:   
+
+</p>
+<p> <code>venue_name</code> 
+:   
+
+</p>
+<p> <code>zipcode</code> 
+:   
+
+</p>
+
+  </div>
+</div></body>
+</html>
